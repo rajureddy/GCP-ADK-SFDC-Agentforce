@@ -1,6 +1,6 @@
 # GCP ADK MCP Agentforce Integration
 
-This project demonstrates a powerful integration between the **Google Agent Development Kit (ADK)** and the **Salesforce Einstein AI Agent (Agentforce)** using the **Model Context Protocol (MCP)**. 
+This project demonstrates a integration between the **Google Agent Development Kit (ADK)** and the **Salesforce Agentforce Agent ** using the **Model Context Protocol (MCP)**. 
 
 By leveraging MCP, we decouple the complex Salesforce API nuances (such as HTTP Server-Sent Events, authentication, and endpoint configuration) from the underlying orchestrator, providing a flexible and stable environment for multi-agent interaction.
 
