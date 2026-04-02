@@ -1,0 +1,737 @@
+{
+  "info": {
+    "_postman_id": "79f5076c-b546-4e7d-bf0b-cb303e504604",
+    "name": "Agent API",
+    "description": "The [Agent API](https://developer.salesforce.com/docs/einstein/genai/guide/agent-api.html) lets you use Agentforce from third party applications.\n\n🎬 [4-minute presentation video](https://www.youtube.com/watch?v=scu4OOC8y5I)\n📚 [Agent API Reference](https://developer.salesforce.com/docs/einstein/genai/guide/agent-api.html)\n\n⚠️ **Disclaimers:**\n\n- This collection is not covered by Salesforce support and SLAs.\n- Each call to the Agent API consumes Einstein Requests. To learn more, see [Generative AI Billable Usage Types](https://help.salesforce.com/s/articleView?id=sf.generative_ai_usage.htm) and [Rate Card for Einstein Requests](https://www.salesforce.com/content/dam/web/en_us/www/documents/einstein-platform-sku-rate-card-base-co-create.pdf).\n\n## Setup\n\nThe Agent API requires access to Agentforce on your Salesforce Org. If you don't have an Org with this feature, you can get a [Developer Edition org](https://www.salesforce.com/form/developer-signup) with Agentforce and Data Cloud to experiment.\n\n1. [Fork](https://app.getpostman.com/run-collection/12721794-8612c754-9efc-4ea1-b876-e8f9af0fe09d?action=collection%2Ffork&source=rip_markdown&collection-url=entityId%3D12721794-8612c754-9efc-4ea1-b876-e8f9af0fe09d%26entityType%3Dcollection%26workspaceId%3D34382471-0c97-40e5-a206-f947271665c4) this collection.\n2. Follow these instructions from the official documentation:\n  1. [Create a Connected App](https://developer.salesforce.com/docs/einstein/genai/guide/agent-api-get-started.html#create-a-connected-app)\n  1. [Add Connected App to Agent](https://developer.salesforce.com/docs/einstein/genai/guide/agent-api-get-started.html#add-connected-app-to-agent)\n  1. [Obtain Credentials](https://developer.salesforce.com/docs/einstein/genai/guide/agent-api-get-started.html#obtain-credentials)\n3. Paste the **Consumer Key** and **Consumer Secret** respectively in the `clientId` and `clientSecret` collection variables.\n4. From Setup, go to `My Domain`, and then copy the value of **Current My Domain URL** into the `sfOrgDomain` collection variable.\n5. From Setup, go to `Agents`, select the agent that you want to interact with and then copy the value of the agent ID (a value starting with `0Xx.....`) from the browser URL into the `agentId` collection variable.\n6. Save your collection variables.\n7. Open the **Authorization** tab of the Postman collection and click **Get New Access Token** at the bottom of the screen.\n8. Click **Use Token**.\n9. Select the **Start Session** request and click **Send** to open a session.\n10. Send a prompt: select the **Send Message - Streaming** request, modify the body with your prompt and click **Send**.\n\n## Variables Reference\n\nThe collection relies on the following required variables:\n\n| Variable | Description |\n| --- | --- |\n| `sfApiHost` | Salesforce API host. Either `https://api.salesforce.com` for production or `https://test.salesforce.com` for sandboxes. |\n| `sfOrgDomain` | Salesforce Org domain with `https://`. See **My Domain** in Salesforce Setup for value. |\n| `clientId` | Connected App Consumer Key. |\n| `clientSecret` | Connected App Consumer Secret. |\n| `agentId` | Agent ID starting with `0Xx.....`. |\n| `_sessionId` | The agent session ID. Do not modify this value, it is handled automatically when creating a session. |",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "35124601"
+  },
+  "item": [
+    {
+      "name": "Start Session",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const context = pm.environment.name ? pm.environment : pm.collectionVariables;",
+              "if (pm.response.code === 200) {",
+              "    context.set(\"_sessionId\", pm.response.json().sessionId);",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"externalSessionKey\": \"{{$guid}}\",\n    \"instanceConfig\": {\n        \"endpoint\": \"{{sfOrgDomain}}\"\n    },\n    \"tz\": \"America/Los_Angeles\",\n    \"variables\": [\n        {\n            \"name\": \"$Context.EndUserLanguage\",\n            \"type\": \"Text\",\n            \"value\": \"en_US\"\n        }\n    ],\n    \"featureSupport\": \"Streaming\",\n    \"streamingCapabilities\": {\n        \"chunkTypes\": [\n            \"Text\"\n        ]\n    },\n    \"bypassUser\": true\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{sfApiHost}}/einstein/ai-agent/v1/agents/{{agentId}}/sessions",
+          "host": [
+            "{{sfApiHost}}"
+          ],
+          "path": [
+            "einstein",
+            "ai-agent",
+            "v1",
+            "agents",
+            "{{agentId}}",
+            "sessions"
+          ]
+        },
+        "description": "Begin an agent session."
+      },
+      "response": [
+        {
+          "name": "Create Session",
+          "originalRequest": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"externalSessionKey\": \"{{$guid}}\",\n    \"instanceConfig\": {\n        \"endpoint\": \"{{sfOrgDomain}}\"\n    },\n    \"streamingCapabilities\": {\n        \"chunkTypes\": [\"Text\"]\n    }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{sfApiHost}}/einstein/ai-agent/v1/agents/{{agentId}}/sessions",
+              "host": [
+                "{{sfApiHost}}"
+              ],
+              "path": [
+                "einstein",
+                "ai-agent",
+                "v1",
+                "agents",
+                "{{agentId}}",
+                "sessions"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "date",
+              "value": "Mon, 27 Jan 2025 17:20:00 GMT"
+            },
+            {
+              "key": "content-type",
+              "value": "application/json"
+            },
+            {
+              "key": "access-control-allow-origin",
+              "value": "*"
+            },
+            {
+              "key": "access-control-allow-headers",
+              "value": "Authorization, Content-Type"
+            },
+            {
+              "key": "access-control-allow-methods",
+              "value": "GET, POST, PUT, DELETE, OPTIONS"
+            },
+            {
+              "key": "x-request-id",
+              "value": "04822877-599c-4094-b309-2a4224db0c52"
+            },
+            {
+              "key": "x-b3-traceid",
+              "value": "17f852255984d4b0b922bd3ac4d8fc41"
+            },
+            {
+              "key": "content-length",
+              "value": "644"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"sessionId\": \"4e9e24a9-b2e8-4232-9711-b18696e7f8ff\",\n    \"_links\": {\n        \"self\": null,\n        \"messages\": {\n            \"href\": \"https://api.salesforce.com/einstein/ai-agent/v1/sessions/4e9e24a9-b2e8-4232-9711-b18696e7f8ff/messages/stream\"\n        },\n        \"session\": {\n            \"href\": \"https://api.salesforce.com/einstein/ai-agent/v1/agents/0XxHr000000vJLEKA2/sessions\"\n        },\n        \"end\": {\n            \"href\": \"https://api.salesforce.com/einstein/ai-agent/v1/sessions/4e9e24a9-b2e8-4232-9711-b18696e7f8ff\"\n        }\n    },\n    \"messages\": [\n        {\n            \"type\": \"Inform\",\n            \"id\": \"ee5f9a0d-40bf-43f6-b23c-f27a50abcede\",\n            \"feedbackId\": \"\",\n            \"planId\": \"\",\n            \"isContentSafe\": true,\n            \"message\": \"Hi, I'm an AI service assistant. How can I help you?\",\n            \"result\": [],\n            \"citedReferences\": []\n        }\n    ]\n}"
+        }
+      ]
+    },
+    {
+      "name": "Send Message - Synchronous",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "const context = pm.environment.name ? pm.environment : pm.collectionVariables;",
+              "",
+              "// Check for session",
+              "if (!context.get('_sessionId')) {",
+              "    throw new Error(`Start a session with the appropriate request first.`);",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"message\": {\n        \"sequenceId\": {{$timestamp}},\n        \"type\": \"Text\",\n        \"text\": \"hi, my email is acme@gmail.com, can you provide a summary of my orders?\"\n    },\n    \"variables\": []\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{sfApiHost}}/einstein/ai-agent/v1/sessions/{{_sessionId}}/messages",
+          "host": [
+            "{{sfApiHost}}"
+          ],
+          "path": [
+            "einstein",
+            "ai-agent",
+            "v1",
+            "sessions",
+            "{{_sessionId}}",
+            "messages"
+          ]
+        },
+        "description": "Send a synchronous message to the agent on an active session."
+      },
+      "response": [
+        {
+          "name": "Send Message - Synchronous",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"message\": {\n        \"sequenceId\": {{$timestamp}},\n        \"type\": \"Text\",\n        \"text\": \"hi, my email is acme@gmail.com, can you provide a summary of my orders?\"\n    },\n    \"variables\": []\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{sfApiHost}}/einstein/ai-agent/v1/sessions/{{_sessionId}}/messages",
+              "host": [
+                "{{sfApiHost}}"
+              ],
+              "path": [
+                "einstein",
+                "ai-agent",
+                "v1",
+                "sessions",
+                "{{_sessionId}}",
+                "messages"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "date",
+              "value": "Thu, 06 Feb 2025 12:49:08 GMT"
+            },
+            {
+              "key": "content-type",
+              "value": "application/json"
+            },
+            {
+              "key": "access-control-allow-origin",
+              "value": "*"
+            },
+            {
+              "key": "access-control-allow-headers",
+              "value": "Authorization, Content-Type"
+            },
+            {
+              "key": "access-control-allow-methods",
+              "value": "GET, POST, PUT, DELETE, OPTIONS"
+            },
+            {
+              "key": "x-request-id",
+              "value": "867542c4-0393-4d80-9018-4939373fae17"
+            },
+            {
+              "key": "x-b3-traceid",
+              "value": "687b2ab7b75432f947392938c3c31241"
+            },
+            {
+              "key": "content-length",
+              "value": "667"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"messages\": [\n        {\n            \"type\": \"Inform\",\n            \"id\": \"379a737a-e575-4fa3-bec1-9f00a9762ccc\",\n            \"feedbackId\": \"5903cc04-4ae5-4180-bbd7-2930bce1fe0d\",\n            \"planId\": \"5903cc04-4ae5-4180-bbd7-2930bce1fe0d\",\n            \"isContentSafe\": true,\n            \"message\": \"Hi there! How can I assist you with your orders today?\",\n            \"result\": [],\n            \"citedReferences\": []\n        }\n    ],\n    \"_links\": {\n        \"self\": null,\n        \"messages\": {\n            \"href\": \"https://api.salesforce.com/einstein/ai-agent/v1/sessions/c838a9ba-dc3a-40da-a9fe-6499169883e2/messages/stream\"\n        },\n        \"session\": {\n            \"href\": \"https://api.salesforce.com/einstein/ai-agent/v1/agents/0XxHr000000vJLEKA2/sessions\"\n        },\n        \"end\": {\n            \"href\": \"https://api.salesforce.com/einstein/ai-agent/v1/sessions/c838a9ba-dc3a-40da-a9fe-6499169883e2\"\n        }\n    }\n}"
+        }
+      ]
+    },
+    {
+      "name": "Send Message - Streaming",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "const context = pm.environment.name ? pm.environment : pm.collectionVariables;",
+              "",
+              "// Check for session",
+              "if (!context.get('_sessionId')) {",
+              "    throw new Error(`Start a session with the appropriate request first.`);",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "text/event-stream",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"message\": {\n        \"sequenceId\": {{$timestamp}},\n        \"type\": \"Text\",\n        \"text\": \"Get me some AI courses that last for 2 hours.\"\n    },\n    \"variables\": []\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{sfApiHost}}/einstein/ai-agent/v1/sessions/{{_sessionId}}/messages/stream",
+          "host": [
+            "{{sfApiHost}}"
+          ],
+          "path": [
+            "einstein",
+            "ai-agent",
+            "v1",
+            "sessions",
+            "{{_sessionId}}",
+            "messages",
+            "stream"
+          ]
+        },
+        "description": "Send a streaming message to the agent on an active session. Returns an SSE stream in the response."
+      },
+      "response": [
+        {
+          "name": "Send Message - Streaming",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "text/event-stream",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"message\": {\n        \"sequenceId\": {{$timestamp}},\n        \"type\": \"Text\",\n        \"text\": \"Can your recommend some AI courses?\"\n    },\n    \"variables\": []\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{sfApiHost}}/einstein/ai-agent/v1/sessions/{{_sessionId}}/messages/stream",
+              "host": [
+                "{{sfApiHost}}"
+              ],
+              "path": [
+                "einstein",
+                "ai-agent",
+                "v1",
+                "sessions",
+                "{{_sessionId}}",
+                "messages",
+                "stream"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "plain",
+          "header": [
+            {
+              "key": "date",
+              "value": "Thu, 06 Feb 2025 12:57:24 GMT"
+            },
+            {
+              "key": "content-type",
+              "value": "text/event-stream"
+            },
+            {
+              "key": "access-control-allow-origin",
+              "value": "*"
+            },
+            {
+              "key": "access-control-allow-headers",
+              "value": "Authorization, Content-Type"
+            },
+            {
+              "key": "access-control-allow-methods",
+              "value": "GET, POST, PUT, DELETE, OPTIONS"
+            },
+            {
+              "key": "x-request-id",
+              "value": "e9338f43-3572-4774-93a0-6d5718d15681"
+            },
+            {
+              "key": "x-b3-traceid",
+              "value": "5964e0fce179ec6ddab086111df7068a"
+            },
+            {
+              "key": "transfer-encoding",
+              "value": "chunked"
+            }
+          ],
+          "cookie": [],
+          "body": "event: PROGRESS_INDICATOR\nid: 1738846647288-WKR\ndata: {\"timestamp\":1738846647290,\"originEventId\":\"1738846647288-WKR\",\"traceId\":\"5964e0fce179ec6ddab086111df7068a\",\"offset\":0,\"message\":{\"type\":\"ProgressIndicator\",\"id\":\"274613d1-2bdb-4b1d-b7de-c8965066a788\",\"indicatorType\":\"ACTION\",\"message\":\"Working\"}}\n\nevent: PROGRESS_INDICATOR\nid: 1738846648790-WKR\ndata: {\"timestamp\":1738846648791,\"originEventId\":\"1738846648790-WKR\",\"traceId\":\"5964e0fce179ec6ddab086111df7068a\",\"offset\":0,\"message\":{\"type\":\"ProgressIndicator\",\"id\":\"22f6090f-e6dd-4af3-b47d-4a7325878a1a\",\"indicatorType\":\"ACTION\",\"message\":\"Thinking\"}}\n\nevent: PROGRESS_INDICATOR\nid: 1738846650090-WKR\ndata: {\"timestamp\":1738846650091,\"originEventId\":\"1738846650090-WKR\",\"traceId\":\"5964e0fce179ec6ddab086111df7068a\",\"offset\":0,\"message\":{\"type\":\"ProgressIndicator\",\"id\":\"0117540d-004b-4ff5-b324-a09d22f3aa58\",\"indicatorType\":\"ACTION\",\"message\":\"Making progress\"}}\n\nevent: PROGRESS_INDICATOR\nid: 1738846667568-WKR\ndata: {\"timestamp\":1738846667569,\"originEventId\":\"1738846667568-WKR\",\"traceId\":\"5964e0fce179ec6ddab086111df7068a\",\"offset\":0,\"message\":{\"type\":\"ProgressIndicator\",\"id\":\"0a193812-9045-4818-b621-89ffa67dbfb2\",\"indicatorType\":\"ACTION\",\"message\":\"Working on it\"}}\n\nevent: INFORM\nid: 1738846670883-WKR\ndata: {\"timestamp\":1738846670885,\"originEventId\":\"1738846670883-WKR\",\"traceId\":\"5964e0fce179ec6ddab086111df7068a\",\"offset\":0,\"message\":{\"type\":\"Inform\",\"id\":\"645d4948-1f64-4707-96f0-84706aa375c5\",\"feedbackId\":\"b884e1ce-d454-4799-8789-1d4694636fae\",\"planId\":\"b884e1ce-d454-4799-8789-1d4694636fae\",\"isContentSafe\":true,\"message\":\"Here are some AI courses you might find interesting:\\n\\n1. Intro to AI: Machine Learning Fundamentals by Ethan N.\\n2. AI for Business: Practical Applications by Isabella A.\\n3. Introduction to AI Concepts by Michael K.\\n4. AI in Everyday Life by Amanda F.\\n5. Machine Learning Fundamentals by Joshua Z.\\n\\nHappy learning!\",\"result\":[],\"citedReferences\":[]}}\n\nevent: END_OF_TURN\nid: 1738846670892-WKR\ndata: {\"timestamp\":1738846670893,\"originEventId\":\"1738846670892-WKR\",\"traceId\":\"5964e0fce179ec6ddab086111df7068a\",\"offset\":0,\"message\":{\"type\":\"EndOfTurn\",\"id\":\"bb211506-1ceb-4c22-aa23-5f1a07c8ea57\"}}\n\n"
+        }
+      ]
+    },
+    {
+      "name": "End Session",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const context = pm.environment.name ? pm.environment : pm.collectionVariables;",
+              "context.set(\"_sessionId\", '');"
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "x-session-end-reason",
+            "value": "UserRequest",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{sfApiHost}}/einstein/ai-agent/v1/sessions/{{_sessionId}}",
+          "host": [
+            "{{sfApiHost}}"
+          ],
+          "path": [
+            "einstein",
+            "ai-agent",
+            "v1",
+            "sessions",
+            "{{_sessionId}}"
+          ]
+        },
+        "description": "Send a message to the agent to end a session."
+      },
+      "response": [
+        {
+          "name": "Delete Session",
+          "originalRequest": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "x-session-end-reason",
+                "value": "UserRequest",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{sfApiHost}}/einstein/ai-agent/v1/sessions/{{_sessionId}}",
+              "host": [
+                "{{sfApiHost}}"
+              ],
+              "path": [
+                "einstein",
+                "ai-agent",
+                "v1",
+                "sessions",
+                "{{_sessionId}}"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "date",
+              "value": "Mon, 27 Jan 2025 17:35:13 GMT"
+            },
+            {
+              "key": "content-type",
+              "value": "application/json"
+            },
+            {
+              "key": "access-control-allow-origin",
+              "value": "*"
+            },
+            {
+              "key": "access-control-allow-headers",
+              "value": "Authorization, Content-Type"
+            },
+            {
+              "key": "access-control-allow-methods",
+              "value": "GET, POST, PUT, DELETE, OPTIONS"
+            },
+            {
+              "key": "x-request-id",
+              "value": "83811275-b8bd-49ae-b31b-3743aff2151d"
+            },
+            {
+              "key": "x-b3-traceid",
+              "value": "80d28ebbd17526d2488e11e4524d77ad"
+            },
+            {
+              "key": "content-length",
+              "value": "493"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"messages\": [\n        {\n            \"type\": \"SessionEnded\",\n            \"id\": \"fbdebcd1-cd93-4000-ad5f-5ded10e20ee0\",\n            \"reason\": \"ClientRequest\",\n            \"feedbackId\": \"\"\n        }\n    ],\n    \"_links\": {\n        \"self\": null,\n        \"messages\": {\n            \"href\": \"https://api.salesforce.com/einstein/ai-agent/v1/sessions/4e9e24a9-b2e8-4232-9711-b18696e7f8ff/messages/stream\"\n        },\n        \"session\": {\n            \"href\": \"https://api.salesforce.com/einstein/ai-agent/v1/agents/0XxHr000000vJLEKA2/sessions\"\n        },\n        \"end\": {\n            \"href\": \"https://api.salesforce.com/einstein/ai-agent/v1/sessions/4e9e24a9-b2e8-4232-9711-b18696e7f8ff\"\n        }\n    }\n}"
+        }
+      ]
+    },
+    {
+      "name": "Submit Feedback",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"feedbackId\": \"90210\",\n    \"feedback\": \"GOOD\",\n    \"text\": \"Result looks great.\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{sfApiHost}}/einstein/ai-agent/v1/sessions/{{_sessionId}}/feedback",
+          "host": [
+            "{{sfApiHost}}"
+          ],
+          "path": [
+            "einstein",
+            "ai-agent",
+            "v1",
+            "sessions",
+            "{{_sessionId}}",
+            "feedback"
+          ]
+        },
+        "description": "Submit feedback for a message. Feedback data is stored in Data Cloud."
+      },
+      "response": [
+        {
+          "name": "Send Feedback",
+          "originalRequest": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"feedbackId\": \"90210\",\n    \"feedback\": \"GOOD\",\n    \"text\": \"Result looks great.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{sfApiHost}}/einstein/ai-agent/v1/sessions/{{_sessionId}}/feedback",
+              "host": [
+                "{{sfApiHost}}"
+              ],
+              "path": [
+                "einstein",
+                "ai-agent",
+                "v1",
+                "sessions",
+                "{{_sessionId}}",
+                "feedback"
+              ]
+            }
+          },
+          "status": "Created",
+          "code": 201,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "date",
+              "value": "Thu, 06 Feb 2025 13:00:23 GMT"
+            },
+            {
+              "key": "content-type",
+              "value": "application/json"
+            },
+            {
+              "key": "access-control-allow-origin",
+              "value": "*"
+            },
+            {
+              "key": "access-control-allow-headers",
+              "value": "Authorization, Content-Type"
+            },
+            {
+              "key": "access-control-allow-methods",
+              "value": "GET, POST, PUT, DELETE, OPTIONS"
+            },
+            {
+              "key": "x-request-id",
+              "value": "266c0b14-5d42-48d5-af4c-fe393da142b1"
+            },
+            {
+              "key": "x-b3-traceid",
+              "value": "0de5c3fdccc5859c039c922bdf902d05"
+            },
+            {
+              "key": "content-length",
+              "value": "0"
+            }
+          ],
+          "cookie": [],
+          "body": null
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "oauth2",
+    "oauth2": [
+      {
+        "key": "client_authentication",
+        "value": "body",
+        "type": "string"
+      },
+      {
+        "key": "clientSecret",
+        "value": "{{clientSecret}}",
+        "type": "string"
+      },
+      {
+        "key": "clientId",
+        "value": "{{clientId}}",
+        "type": "string"
+      },
+      {
+        "key": "accessTokenUrl",
+        "value": "{{sfOrgDomain}}/services/oauth2/token",
+        "type": "string"
+      },
+      {
+        "key": "tokenName",
+        "value": "access_token",
+        "type": "string"
+      },
+      {
+        "key": "grant_type",
+        "value": "client_credentials",
+        "type": "string"
+      },
+      {
+        "key": "addTokenTo",
+        "value": "header",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          "const context = pm.environment.name ? pm.environment : pm.collectionVariables;",
+          "",
+          "// Check for required variables",
+          "['sfApiHost', 'sfOrgDomain', 'clientId', 'clientSecret', 'agentId'].forEach(key => {",
+          "    if (!context.get(key)) {",
+          "        throw new Error(`Missing mandatory configuration variable: ${key}`);",
+          "    }",
+          "});",
+          "// Check for protocol in URL",
+          "['sfApiHost', 'sfOrgDomain'].forEach(key => {",
+          "    const url = context.get(key);",
+          "    if (!url.startsWith('https://')) {",
+          "        throw new Error(`Configuration variable ${key} value must include 'https://' protocol.`);",
+          "    }",
+          "});"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "sfApiHost",
+      "value": "https://api.salesforce.com"
+    },
+    {
+      "key": "sfOrgDomain",
+      "value": ""
+    },
+    {
+      "key": "clientId",
+      "value": ""
+    },
+    {
+      "key": "clientSecret",
+      "value": ""
+    },
+    {
+      "key": "agentId",
+      "value": ""
+    },
+    {
+      "key": "_sessionId",
+      "value": ""
+    }
+  ]
+}

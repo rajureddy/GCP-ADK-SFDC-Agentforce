@@ -1,0 +1,6 @@
+google-adk[a2a]
+requests
+python-dotenv
+mcp
+httpx-sse
+httpx
