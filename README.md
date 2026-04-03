@@ -1,4 +1,4 @@
-# GCP ADK MCP Agentforce Integration
+# GCP ADK --> MCP(Agentforce service agent)
 <img width="1892" height="882" alt="ADKMCP2" src="https://github.com/user-attachments/assets/8092d792-f3a9-4340-9174-02105985add2" />
 
 This project demonstrates a powerful integration between the **Google ADK** and the **Salesforce Agentforce Agent ** using the **MCP**. 
