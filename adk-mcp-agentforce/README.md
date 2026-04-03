@@ -5,7 +5,7 @@ This project demonstrates a powerful integration between the **Google Agent Deve
 By leveraging MCP, we decouple the complex Salesforce API nuances (such as HTTP Server-Sent Events, authentication, and endpoint configuration) from the underlying orchestrator, providing a flexible and stable environment for multi-agent interaction.
 
 ## Architecture Highlights
-- **Google ADK Orchestrator (`main.py`)**: A standard `LlmAgent` orchestrator utilizing `gemini-2.5-flash` that routes intents and actions.
+- **Google ADK Orchestrator (`agents/salesforce_app/agent.py`)**: A standard `LlmAgent` orchestrator utilizing `gemini-2.5-flash` that routes intents and actions.
 - **FastMCP Server (`salesforce_mcp.py`)**: A dedicated Model Context Protocol server exposing specific Salesforce Agent capabilities as standardized tools (`start_session`, `send_message_stream`, and `end_session`).
 - **Standardized IO**: The orchestrator communicates securely with the MCP server over `stdio`.
 - **OAuth Integration (`auth.py`)**: Uses the Salesforce OAuth2 Client Credentials flow for secure, headless authentication.
@@ -49,14 +49,14 @@ By leveraging MCP, we decouple the complex Salesforce API nuances (such as HTTP 
 
 ## Usage
 
-Start the interactive CLI session by running the main Python script:
+Start the Google ADK Web Dashboard by running the ADK CLI:
 
 ```bash
-python main.py
+py -m google.adk.cli web agents
 ```
 
 ### What happens under the hood?
-1. The script automatically boots up the FastMCP server (`salesforce_mcp.py`) as a subprocess.
+1. The agent initialization automatically boots up the FastMCP server (`salesforce_mcp.py`) as a subprocess.
 2. The Google Orchestrator binds to the MCP server.
 3. When you submit a request (e.g., *"I want to talk to a CRM expert"*), the Gemini orchestrator detects that CRM context is required.
 4. Gemini seamlessly calls the dynamic MCP tools to open a session with Agentforce, pass your messages, stream back the responses (Server-Sent Events), and wrap up the session gracefully.
@@ -65,7 +65,7 @@ python main.py
 
 - **Empty force-config endpoint error**: Ensure `SF_DOMAIN` is correctly configured in your `.env` file without the `https://` prefix (e.g. `example.my.salesforce.com`).
 - **Auth Errors**: Verify that your Salesforce Connected App allows the "Client Credentials Flow", has the correct profile permissions, and that the `Client Secret` is accurate.
-- **Missing Tools / Undefined Responses**: Ensure that `salesforce_mcp.py` is successfully starting on `stdio`. Terminal logs at the boot of `main.py` should say `✅ MCP Server Connected.`
+- **Missing Tools / Undefined Responses**: Ensure that `salesforce_mcp.py` is successfully starting on `stdio`. Terminal logs at the boot of the web server should say `✅ MCP Server Connected.`
 
 ## License
 MIT License
